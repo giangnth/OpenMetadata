@@ -39,6 +39,7 @@
         "SingleStore",
         "SQLite",
         "DeltaLake",
+        "Hudi",
         "Salesforce",
         "PinotDB",
         "Datalake",
@@ -124,6 +125,9 @@
           "name": "DeltaLake"
         },
         {
+          "name": "Hudi"
+        },
+        {
           "name": "Salesforce"
         },
         {
@@ -185,6 +189,9 @@
             },
             {
               "$ref": "./connections/database/deltaLakeConnection.json"
+            },
+            {
+              "$ref": "./connections/database/hudiConnection.json"
             },
             {
               "$ref": "./connections/database/druidConnection.json"

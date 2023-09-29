@@ -16,6 +16,14 @@ UPDATE dbservice_entity
 SET json = JSON_REMOVE(json, '$.connection.config.supportsProfiler')
 WHERE serviceType = 'DeltaLake';
 
+UPDATE dbservice_entity
+SET json = JSON_REMOVE(json, '$.connection.config.connectionOptions')
+WHERE serviceType = 'Hudi';
+
+UPDATE dbservice_entity
+SET json = JSON_REMOVE(json, '$.connection.config.supportsProfiler')
+WHERE serviceType = 'Hudi';
+
 UPDATE dashboard_service_entity
 SET json = JSON_INSERT(
         JSON_REMOVE(json, '$.connection.config.username'),

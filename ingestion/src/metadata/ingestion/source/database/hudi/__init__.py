@@ -75,8 +75,8 @@ def configure_spark_with_hudi_pip(
         raise Exception(msg) from e
 
     scala_version = "2.12"
-    maven_artifact = f"io.delta:delta-core_{scala_version}:{delta_version}"
-
+    # maven_artifact = f"io.delta:delta-core_{scala_version}:{delta_version}"
+    maven_artifact = "org.apache.hudi:hudi-spark3.3-bundle_2.12:0.13.1"
     extra_packages = extra_packages if extra_packages is not None else []
     all_artifacts = [maven_artifact] + extra_packages
     packages_str = ",".join(all_artifacts)

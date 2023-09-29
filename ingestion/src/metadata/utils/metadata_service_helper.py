@@ -15,6 +15,14 @@ SERVICE_TYPE_MAPPER = {
             }
         },
     },
+    "hudi": {
+        "service_name": "Hudi",
+        "connection": {
+            "config": {
+                "metastoreConnection": {"metastoreHostPort": "http://localhost:9083"}
+            }
+        },
+    },
     "dynamo": {
         "service_name": "DynamoDB",
         "connection": {

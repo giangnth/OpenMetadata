@@ -32,6 +32,24 @@ SET json = JSON_INSERT(
 where serviceType = 'DeltaLake'
   and JSON_EXTRACT(json, '$.connection.config.metastoreFilePath') is not null;
 
+UPDATE dbservice_entity
+SET json = JSON_INSERT(
+        JSON_REMOVE(json, '$.connection.config.metastoreHostPort'),
+        '$.connection.config.metastoreConnection',
+        JSON_OBJECT('metastoreHostPort', JSON_EXTRACT(json, '$.connection.config.metastoreHostPort'))
+    )
+where serviceType = 'Hudi'
+  and JSON_EXTRACT(json, '$.connection.config.metastoreHostPort') is not null;
+
+UPDATE dbservice_entity
+SET json = JSON_INSERT(
+        JSON_REMOVE(json, '$.connection.config.metastoreFilePath'),
+        '$.connection.config.metastoreConnection',
+        JSON_OBJECT('metastoreFilePath', JSON_EXTRACT(json, '$.connection.config.metastoreFilePath'))
+    )
+where serviceType = 'Hudi'
+  and JSON_EXTRACT(json, '$.connection.config.metastoreFilePath') is not null;
+
 
 ALTER TABLE test_definition 
 ADD COLUMN supported_data_types JSON GENERATED ALWAYS AS (json -> '$.supportedDataTypes');

@@ -36,9 +36,37 @@ SET json = jsonb_set(
 WHERE serviceType = 'DeltaLake'
   AND json#>'{connection,config,metastoreFilePath}' is not null;
 
+
+UPDATE dbservice_entity
+SET json = jsonb_set(
+        json,
+        '{connection,config,metastoreConnection}',
+        jsonb_build_object('metastoreHostPort', json#>'{connection,config,metastoreHostPort}')
+    )
+WHERE serviceType = 'Hudi'
+  AND json#>'{connection,config,metastoreHostPort}' is not null;
+
+UPDATE dbservice_entity
+SET json = json::jsonb #- '{connection,config,metastoreHostPort}'
+WHERE serviceType = 'Hudi';
+
+UPDATE dbservice_entity
+SET json = jsonb_set(
+        json,
+        '{connection,config,metastoreConnection}',
+        jsonb_build_object('metastoreFilePath', json#>'{connection,config,metastoreFilePath}')
+    )
+WHERE serviceType = 'Hudi'
+  AND json#>'{connection,config,metastoreFilePath}' is not null;
+
+
 UPDATE dbservice_entity
 SET json = json::jsonb #- '{connection,config,metastoreFilePath}'
 WHERE serviceType = 'DeltaLake';
+
+UPDATE dbservice_entity
+SET json = json::jsonb #- '{connection,config,metastoreFilePath}'
+WHERE serviceType = 'Hudi';
 
 ALTER TABLE test_definition 
 ADD supported_data_types JSONB GENERATED ALWAYS AS (json -> 'supportedDataTypes') STORED;
