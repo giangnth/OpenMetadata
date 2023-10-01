@@ -82,6 +82,7 @@ import superset from '../assets/img/service-icon-superset.png';
 import tableau from '../assets/img/service-icon-tableau.png';
 import trino from '../assets/img/service-icon-trino.png';
 import vertica from '../assets/img/service-icon-vertica.png';
+import starRocks from '../assets/img/starrocks.png';
 import dashboardDefault from '../assets/svg/dashboard.svg';
 import iconDefaultService from '../assets/svg/default-service-icon.svg';
 import elasticSearch from '../assets/svg/elasticsearch.svg';
@@ -183,6 +184,8 @@ export const LIGHT_DASH = lightDash;
 export const COUCHBASE = couchbase;
 export const ELASTIC_SEARCH = elasticSearch;
 export const OPEN_SEARCH = openSearch;
+
+export const STARROCKS = starRocks;
 
 export const PLUS = plus;
 export const NOSERVICE = noService;
