@@ -1,6 +1,6 @@
 from starrocks.sqlalchemy.dialect import StarRocksDialect
 from metadata.generated.schema.entity.services.connections.database.starrocksConnection import (
-    StarRocksConnection,
+    StarrocksConnection,
 )
 from metadata.generated.schema.entity.services.connections.metadata.openMetadataConnection import (
     OpenMetadataConnection,
@@ -24,8 +24,8 @@ class StarrocksSource(CommonDbSourceService):
     @classmethod
     def create(cls, config_dict, metadata_config: OpenMetadataConnection):
         config: WorkflowSource = WorkflowSource.parse_obj(config_dict)
-        connection: StarRocksConnection = config.serviceConnection.__root__.config
-        if not isinstance(connection, StarRocksConnection):
+        connection: StarrocksConnection = config.serviceConnection.__root__.config
+        if not isinstance(connection, StarrocksConnection):
             raise InvalidSourceException(
                 f"Expected DatabricksConnection, but got {connection}"
             )

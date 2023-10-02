@@ -1,6 +1,6 @@
-# ClickHouse
+# StarRocks
 
-In this section, we provide guides and references to use the ClickHouse connector.
+In this section, we provide guides and references to use the StarRocks connector.
 
 ## Requirements
 

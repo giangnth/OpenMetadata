@@ -95,6 +95,7 @@ from metadata.generated.schema.entity.services.connections.database.snowflakeCon
 from metadata.generated.schema.entity.services.connections.database.sqliteConnection import (
     SQLiteConnection,
 )
+from metadata.generated.schema.entity.services.connections.database.starrocksConnection import StarrocksConnection
 from metadata.generated.schema.entity.services.connections.database.trinoConnection import (
     TrinoConnection,
 )
@@ -860,3 +861,23 @@ def test_vertica():
 
     config: WorkflowSource = WorkflowSource.parse_obj(source)
     assert isinstance(config.serviceConnection.__root__.config, VerticaConnection)
+
+
+def test_starrocks():
+    source = {
+        "type": "starrocks",
+        "serviceName": "local_starrocks",
+        "serviceConnection": {
+            "config": {
+                "type": "Starrocks",
+                "username": "admin",
+                "password": "",
+                "hostPort": "localhost:9030",
+                "database": "profiling",
+            }
+        },
+        "sourceConfig": {"config": {"type": "DatabaseMetadata"}},
+    }
+
+    config: WorkflowSource = WorkflowSource.parse_obj(source)
+    assert isinstance(config.serviceConnection.__root__.config, StarrocksConnection)
