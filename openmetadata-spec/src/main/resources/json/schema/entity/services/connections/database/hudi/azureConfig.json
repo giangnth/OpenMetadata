@@ -1,0 +1,15 @@
+{
+  "$id": "https://open-metadata.org/schema/entity/services/connections/database/hudi/azureConfig.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AzureConfig",
+  "description": "Azure Hudi Storage will ingest files in container",
+  "type": "object",
+  "javaType": "org.openmetadata.schema.services.connections.database.hudi.AzureConfig",
+  "properties": {
+    "securityConfig": {
+      "title": "Azure Hudi Config Source",
+      "$ref": "../../../../../security/credentials/azureCredentials.json"
+    }
+  },
+  "additionalProperties": false
+}

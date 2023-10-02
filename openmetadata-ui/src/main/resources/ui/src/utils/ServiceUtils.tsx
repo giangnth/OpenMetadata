@@ -42,6 +42,7 @@ import {
   DATALAKE,
   DEFAULT_SERVICE,
   DELTALAKE,
+  HUDI,
   DOMO,
   DRUID,
   DYNAMODB,
@@ -208,6 +209,9 @@ export const serviceTypeLogo = (type: string) => {
 
     case DatabaseServiceType.DeltaLake:
       return DELTALAKE;
+
+    case DatabaseServiceType.Hudi:
+      return HUDI;
 
     case DatabaseServiceType.PinotDB:
       return PINOT;

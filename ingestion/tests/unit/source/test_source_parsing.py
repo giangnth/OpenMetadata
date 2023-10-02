@@ -59,6 +59,9 @@ from metadata.generated.schema.entity.services.connections.database.glueConnecti
 from metadata.generated.schema.entity.services.connections.database.hiveConnection import (
     HiveConnection,
 )
+from metadata.generated.schema.entity.services.connections.database.hudiConnection import (
+    HudiConnection,
+)
 from metadata.generated.schema.entity.services.connections.database.impalaConnection import (
     ImpalaConnection,
 )
@@ -315,6 +318,55 @@ def test_deltalake():
 
     config: WorkflowSource = WorkflowSource.parse_obj(source)
     assert isinstance(config.serviceConnection.__root__.config, DeltaLakeConnection)
+
+
+def test_hudi():
+    source = {
+        "type": "hudi",
+        "serviceName": "local_hudi",
+        "serviceConnection": {
+            "config": {
+                "metastoreConnection": {
+                    "metastoreDb": "jdbc:mysql://localhost:3306/demo_hive"
+                },
+                "appName": "MyApp",
+            }
+        },
+        "sourceConfig": {"config": {"type": "DatabaseMetadata"}},
+    }
+
+    config: WorkflowSource = WorkflowSource.parse_obj(source)
+    assert isinstance(config.serviceConnection.__root__.config, HudiConnection)
+
+    source = {
+        "type": "hudi",
+        "serviceName": "local_hudi",
+        "serviceConnection": {
+            "config": {
+                "metastoreConnection": {"metastoreHostPort": "localhost:9083"},
+                "appName": "MyApp",
+            }
+        },
+        "sourceConfig": {"config": {"type": "DatabaseMetadata"}},
+    }
+
+    config: WorkflowSource = WorkflowSource.parse_obj(source)
+    assert isinstance(config.serviceConnection.__root__.config, HudiConnection)
+
+    source = {
+        "type": "hudi",
+        "serviceName": "local_hudi",
+        "serviceConnection": {
+            "config": {
+                "metastoreConnection": {"metastoreFilePath": "/tmp/metastore.db"},
+                "appName": "MyApp",
+            }
+        },
+        "sourceConfig": {"config": {"type": "DatabaseMetadata"}},
+    }
+
+    config: WorkflowSource = WorkflowSource.parse_obj(source)
+    assert isinstance(config.serviceConnection.__root__.config, HudiConnection)
 
 
 def test_druid():
