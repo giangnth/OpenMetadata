@@ -71,8 +71,8 @@ MOCK_HUDI_CONFIG = {
 
 MOCK_DATABASE_SERVICE = DatabaseService(
     id="85811038-099a-11ed-861d-0242ac120002",
-    name="local_databricks",
-    fullyQualifiedName="local_databricks",
+    name="local_hudi",
+    fullyQualifiedName="local_hudi",
     connection=DatabaseConnection(),
     serviceType=DatabaseServiceType.Hudi,
 )
@@ -162,7 +162,7 @@ class HudiUnitTest(TestCase):
         database_request = next(self.hudi.yield_database(database_name="default")).right
         expected_database_request = CreateDatabaseRequest(
             name="default",
-            service=FullyQualifiedEntityName(__root__="local_databricks"),
+            service=FullyQualifiedEntityName(__root__="local_hudi"),
         )
 
         self.assertEqual(database_request, expected_database_request)
