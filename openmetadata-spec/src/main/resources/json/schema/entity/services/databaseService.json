@@ -50,7 +50,7 @@
         "SapHana",
         "MongoDB",
         "Couchbase",
-        "Starrocks",
+        "Starrocks"
       ],
       "javaEnums": [
         {

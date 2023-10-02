@@ -321,7 +321,7 @@ export const serviceTypeLogo = (type: string) => {
     case SearchServiceType.OpenSearch:
       return OPEN_SEARCH;
 
-    case DatabaseServiceType.StarRocks:
+    case DatabaseServiceType.Starrocks:
       return STARROCKS;
 
     default: {

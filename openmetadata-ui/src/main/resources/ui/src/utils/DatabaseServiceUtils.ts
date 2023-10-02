@@ -218,7 +218,7 @@ export const getDatabaseConfig = (type: DatabaseServiceType) => {
 
       break;
     }
-    case DatabaseServiceType.StarRocks: {
+    case DatabaseServiceType.Starrocks: {
       schema = starrocksConnection;
 
       break;
