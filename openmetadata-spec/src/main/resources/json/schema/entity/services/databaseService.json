@@ -156,6 +156,9 @@
         },
         {
           "name": "Couchbase"
+        },
+        {
+          "name": "Starrocks"
         }
       ]
     },
@@ -267,6 +270,9 @@
             },
             {
               "$ref": "./connections/database/couchbaseConnection.json"
+            },
+            {
+              "$ref": "./connections/database/starrocksConnection.json"
             }
           ]
         }

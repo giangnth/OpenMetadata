@@ -89,6 +89,7 @@ import {
   SNOWFLAKE,
   SPLINE,
   SQLITE,
+  STARROCKS,
   SUPERSET,
   TABLEAU,
   TOPIC_DEFAULT,
@@ -319,6 +320,9 @@ export const serviceTypeLogo = (type: string) => {
 
     case SearchServiceType.OpenSearch:
       return OPEN_SEARCH;
+
+    case SearchServiceType.StarRocks:
+      return STARROCKS;
 
     default: {
       let logo;

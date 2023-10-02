@@ -45,6 +45,7 @@ import sapHanaConnection from '../jsons/connectionSchemas/connections/database/s
 import singleStoreConnection from '../jsons/connectionSchemas/connections/database/singleStoreConnection.json';
 import snowflakeConnection from '../jsons/connectionSchemas/connections/database/snowflakeConnection.json';
 import sqliteConnection from '../jsons/connectionSchemas/connections/database/sqliteConnection.json';
+import starrocksConnection from '../jsons/connectionSchemas/connections/database/starrocksConnection.json';
 import trinoConnection from '../jsons/connectionSchemas/connections/database/trinoConnection.json';
 import verticaConnection from '../jsons/connectionSchemas/connections/database/verticaConnection.json';
 
@@ -214,6 +215,11 @@ export const getDatabaseConfig = (type: DatabaseServiceType) => {
     }
     case DatabaseServiceType.PinotDB: {
       schema = pinotConnection;
+
+      break;
+    }
+    case DatabaseServiceType.StarRocks: {
+      schema = starrocksConnection;
 
       break;
     }
