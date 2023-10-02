@@ -4,12 +4,6 @@
     "description": "This Test Connection validates the access against the database and basic metadata extraction of schemas and tables.",
     "steps": [
       {
-        "name": "GetCatalogs",
-        "description": "List all the catalogs available to the user.",
-        "errorMessage": "Failed to fetch catalogs, please validate if the user has enough privilege to fetch catalogs.",
-        "mandatory": true
-      },
-      {
         "name": "GetSchemas",
         "description": "List all the schemas available to the user.",
         "errorMessage": "Failed to fetch schemas, please validate if the user has enough privilege to fetch schemas.",

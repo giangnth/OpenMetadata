@@ -21,14 +21,12 @@ from metadata.generated.schema.entity.automations.workflow import (
     Workflow as AutomationWorkflow,
 )
 from metadata.generated.schema.entity.services.connections.database.starrocksConnection import (
-    StarrocksConnection,
+    StarRocksConnection,
 )
 from metadata.ingestion.connections.builders import (
     create_generic_db_connection,
     get_connection_args_common,
     get_connection_url_common,
-    init_empty_connection_arguments,
-    init_empty_connection_options,
 )
 from metadata.ingestion.connections.test_connections import test_connection_db_common
 from metadata.ingestion.ometa.ometa_api import OpenMetadata
@@ -39,7 +37,7 @@ from metadata.ingestion.source.database.starrocks.queries import (
 STARROCKS_PROTOCOL = "starrocks"
 
 
-def get_connection(connection: StarrocksConnection) -> Engine:
+def get_connection(connection: StarRocksConnection) -> Engine:
     """
     Create StarrocksConnection connection
     """
@@ -55,7 +53,7 @@ def get_connection(connection: StarrocksConnection) -> Engine:
 def test_connection(
     metadata: OpenMetadata,
     engine: Engine,
-    service_connection: StarrocksConnection,
+    service_connection: StarRocksConnection,
     automation_workflow: Optional[AutomationWorkflow] = None,
 ) -> None:
     """
