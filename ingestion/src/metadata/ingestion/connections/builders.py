@@ -64,9 +64,8 @@ def create_generic_db_connection(
     Returns:
         SQLAlchemy Engine
     """
-    url = get_connection_url_fn(connection)
     engine = create_engine(
-        url,
+        get_connection_url_fn(connection),
         connect_args=get_connection_args_fn(connection),
         poolclass=QueuePool,
         pool_reset_on_return=None,  # https://docs.sqlalchemy.org/en/14/core/pooling.html#reset-on-return
