@@ -31,7 +31,7 @@ from metadata.ingestion.connections.builders import (
 from metadata.ingestion.connections.test_connections import test_connection_db_common
 from metadata.ingestion.ometa.ometa_api import OpenMetadata
 from metadata.ingestion.source.database.starrocks.queries import (
-    STARROCKS_SQL_STATEMENT_TEST,
+    STARROCKS_SQL_STATEMENT_TEST, STARROCKS_SQL_GET_SCHEMA, STARROCKS_SQL_GET_TABLES, STARROCKS_SQL_GET_VIEW,
 )
 
 STARROCKS_PROTOCOL = "starrocks"
@@ -41,7 +41,7 @@ def get_connection(connection: StarrocksConnection) -> Engine:
     """
     Create StarrocksConnection connection
     """
-    connection.connectionOptions.__root__["protocol"] = STARROCKS_PROTOCOL
+    # connection.scheme = STARROCKS_PROTOCOL
 
     return create_generic_db_connection(
         connection=connection,
@@ -61,7 +61,12 @@ def test_connection(
     of a metadata workflow or during an Automation Workflow
     """
 
-    queries = {"GetQueries": STARROCKS_SQL_STATEMENT_TEST}
+    queries = {
+        "GetSchemas": STARROCKS_SQL_GET_SCHEMA,
+        "GetTables": STARROCKS_SQL_GET_TABLES,
+        "GetViews": STARROCKS_SQL_GET_VIEW,
+        "GetQueries": STARROCKS_SQL_STATEMENT_TEST
+    }
 
     test_connection_db_common(
         metadata=metadata,

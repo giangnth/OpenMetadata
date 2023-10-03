@@ -99,6 +99,9 @@ WHERE serviceType = 'Athena';
 UPDATE dbservice_entity
 SET json = json::jsonb #- '{connection,config,username}' #- '{connection,config,password}'
 WHERE serviceType in ('Databricks');
+UPDATE dbservice_entity
+SET json = json::jsonb #- '{connection,config,connectionOptions}'
+WHERE serviceType = 'Starrocks';
 
 CREATE TABLE IF NOT EXISTS openmetadata_settings (
     id SERIAL NOT NULL ,
