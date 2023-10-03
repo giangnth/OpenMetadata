@@ -6,10 +6,7 @@ source:
       type: Starrocks
       username: root
       password: ''
-      hostPort: 192.168.5.101:30817
-#      databaseSchema: default
-#      connectionDetails:
-#        connectionURI: starrocks://root:@192.168.5.101:30817/default.
+      hostPort: localhost:9030
   sourceConfig:
     config:
       type: DatabaseMetadata

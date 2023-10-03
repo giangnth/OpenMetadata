@@ -34,14 +34,11 @@ def run_ingest(config_path: str) -> None:
     to a JSON or YAML file
     :param config_path: Path to load JSON config
     """
-
     config_file = pathlib.Path(config_path)
     config_dict = None
     try:
         config_dict = load_config_file(config_file)
-        print(1)
         workflow = MetadataWorkflow.create(config_dict)
-        print(2)
         logger.debug(f"Using config: {workflow.config}")
     except Exception as exc:
         logger.debug(traceback.format_exc())
