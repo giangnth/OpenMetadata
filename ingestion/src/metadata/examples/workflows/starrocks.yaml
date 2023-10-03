@@ -4,10 +4,12 @@ source:
   serviceConnection:
     config:
       type: Starrocks
-      username: admin
+      username: root
       password: ''
-      hostPort: localhost:9030
-      databaseSchema: default
+      hostPort: 192.168.5.101:30817
+#      databaseSchema: default
+#      connectionDetails:
+#        connectionURI: starrocks://root:@192.168.5.101:30817/default.
   sourceConfig:
     config:
       type: DatabaseMetadata
