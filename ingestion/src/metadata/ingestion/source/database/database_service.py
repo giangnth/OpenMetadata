@@ -475,7 +475,7 @@ class DatabaseServiceSource(
             )
             if filter_by_schema(
                 self.source_config.schemaFilterPattern,
-                schema_fqn if self.source_config.useFqnForFiltering else schema_name,
+                schema_fqn if self.source_config.dict().get("useFqnForFiltering") and self.source_config.useFqnForFiltering else schema_name,
             ):
                 if add_to_status:
                     self.status.filter(schema_fqn, "Schema Filtered Out")

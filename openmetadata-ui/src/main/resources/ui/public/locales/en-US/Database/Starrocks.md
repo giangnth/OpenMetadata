@@ -4,7 +4,7 @@ In this section, we provide guides and references to use the StarRocks connector
 
 ## Requirements
 
-ClickHouse user must grant `SELECT` privilege on `system.*` and schema/tables to fetch the metadata of tables and views.
+StarRocks user must grant `SELECT` privilege on `system.*` and schema/tables to fetch the metadata of tables and views.
 
 * Create a new user. Find mode details [here](https://clickhouse.com/docs/en/sql-reference/statements/create/user).
 
