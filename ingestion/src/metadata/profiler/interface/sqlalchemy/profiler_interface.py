@@ -48,6 +48,7 @@ thread_local = threading.local()
 
 OVERFLOW_ERROR_CODES = {
     "snowflake": {100046, 100058},
+    "starrocks": {1064}
 }
 
 
@@ -218,7 +219,7 @@ class SQAProfilerInterface(ProfilerInterface, SQAInterfaceMixin):
             )
             return dict(row)
         except ProgrammingError as exc:
-            if exc.orig and exc.orig.errno in OVERFLOW_ERROR_CODES.get(
+            if exc.orig and hasattr(exc.orig, 'errno') and exc.orig.errno in OVERFLOW_ERROR_CODES.get(
                 session.bind.dialect.name
             ):
                 logger.info(
@@ -295,8 +296,9 @@ class SQAProfilerInterface(ProfilerInterface, SQAInterfaceMixin):
             row = runner.select_first_from_sample(
                 *[metric(column).fn() for metric in metrics],
             )
+            return dict(row)
         except ProgrammingError as exc:
-            if exc.orig and exc.orig.errno in OVERFLOW_ERROR_CODES.get(
+            if exc.orig and hasattr(exc.orig, 'errno') and exc.orig.errno in OVERFLOW_ERROR_CODES.get(
                 session.bind.dialect.name
             ):
                 logger.info(
@@ -307,8 +309,6 @@ class SQAProfilerInterface(ProfilerInterface, SQAInterfaceMixin):
         except Exception as exc:
             msg = f"Error trying to compute profile for {runner.table.__tablename__}.{column.name}: {exc}"
             handle_query_exception(msg, exc, session)
-        if row:
-            return dict(row)
         return None
 
     def _compute_system_metrics(
