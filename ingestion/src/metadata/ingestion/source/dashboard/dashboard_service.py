@@ -120,9 +120,9 @@ class DashboardServiceTopology(ServiceTopology):
         stages=[
             NodeStage(
                 type_=DashboardDataModel,
-                context="dataModel",
                 processor="yield_bulk_datamodel",
                 consumer=["dashboard_service"],
+                nullable=True,
             )
         ],
     )
@@ -161,14 +161,12 @@ class DashboardServiceTopology(ServiceTopology):
             ),
             NodeStage(
                 type_=AddLineageRequest,
-                context="lineage",
                 processor="yield_dashboard_lineage",
                 consumer=["dashboard_service"],
                 nullable=True,
             ),
             NodeStage(
                 type_=UsageRequest,
-                context="usage",
                 processor="yield_dashboard_usage",
                 consumer=["dashboard_service"],
                 nullable=True,
@@ -351,16 +349,17 @@ class DashboardServiceSource(TopologyRunnerMixin, Source, ABC):
 
     def process_owner(self, dashboard_details):
         try:
-            owner = self.get_owner_details(  # pylint: disable=assignment-from-none
-                dashboard_details=dashboard_details
-            )
-            if owner and self.source_config.includeOwners:
-                self.metadata.patch_owner(
-                    entity=Dashboard,
-                    source=self.context.dashboard,
-                    owner=owner,
-                    force=False,
+            if self.source_config.includeOwners:
+                owner = self.get_owner_details(  # pylint: disable=assignment-from-none
+                    dashboard_details=dashboard_details
                 )
+                if owner:
+                    self.metadata.patch_owner(
+                        entity=Dashboard,
+                        source=self.context.dashboard,
+                        owner=owner,
+                        force=False,
+                    )
         except Exception as exc:
             logger.debug(traceback.format_exc())
             logger.warning(f"Error processing owner for {dashboard_details}: {exc}")
