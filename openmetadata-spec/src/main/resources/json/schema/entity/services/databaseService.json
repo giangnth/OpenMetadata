@@ -50,7 +50,8 @@
         "SapHana",
         "MongoDB",
         "Couchbase",
-        "Starrocks"
+        "Starrocks",
+        "Greenplum"
       ],
       "javaEnums": [
         {
@@ -160,6 +161,9 @@
         },
         {
           "name": "Starrocks"
+        },
+        {
+          "name": "Greenplum"
         }
       ]
     },
@@ -274,6 +278,9 @@
             },
             {
               "$ref": "./connections/database/starrocksConnection.json"
+            },
+            {
+              "$ref": "./connections/database/greenplumConnection.json"
             }
           ]
         }
