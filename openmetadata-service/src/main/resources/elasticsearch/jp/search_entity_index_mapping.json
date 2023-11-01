@@ -82,6 +82,25 @@
         "type": "text",
         "analyzer": "om_analyzer_jp"
       },
+      "tier": {
+        "properties": {
+          "tagFQN": {
+            "type": "keyword"
+          },
+          "labelType": {
+            "type": "keyword"
+          },
+          "description": {
+            "type": "text"
+          },
+          "source": {
+            "type": "keyword"
+          },
+          "state": {
+            "type": "keyword"
+          }
+        }
+      },
       "fields": {
         "properties": {
           "name": {
@@ -361,7 +380,7 @@
         }
       },
       "extension": {
-        "type": "keyword"
+        "type": "object"
       },
       "lifeCycle": {
         "type": "object"

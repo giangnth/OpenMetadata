@@ -59,7 +59,7 @@ import {
   getEntityName,
   getEntityVoteStatus,
 } from '../../../utils/EntityUtils';
-import { serviceTypeLogo } from '../../../utils/ServiceUtils';
+import serviceUtilClassBase from '../../../utils/ServiceUtilClassBase';
 import { getTierTags } from '../../../utils/TableUtils';
 import { showErrorToast } from '../../../utils/ToastUtils';
 import {
@@ -140,7 +140,10 @@ export const DataAssetsHeader = ({
   const icon = useMemo(
     () =>
       dataAsset?.serviceType ? (
-        <img className="h-9" src={serviceTypeLogo(dataAsset.serviceType)} />
+        <img
+          className="h-9"
+          src={serviceUtilClassBase.getServiceTypeLogo(dataAsset.serviceType)}
+        />
       ) : null,
     [dataAsset]
   );
@@ -191,10 +194,7 @@ export const DataAssetsHeader = ({
   const fetchActiveAnnouncement = async () => {
     try {
       const announcements = await getActiveAnnouncement(
-        getEntityFeedLink(
-          entityType,
-          encodeURIComponent(dataAsset.fullyQualifiedName ?? '')
-        )
+        getEntityFeedLink(entityType, dataAsset.fullyQualifiedName ?? '')
       );
 
       if (!isEmpty(announcements.data)) {
@@ -208,10 +208,7 @@ export const DataAssetsHeader = ({
   const fetchTaskCount = () => {
     // To get open tasks count
     getFeedCount(
-      getEntityFeedLink(
-        entityType,
-        encodeURIComponent(dataAsset.fullyQualifiedName ?? '')
-      ),
+      getEntityFeedLink(entityType, dataAsset.fullyQualifiedName ?? ''),
       ThreadType.Task,
       ThreadTaskStatus.Open
     )
@@ -285,7 +282,7 @@ export const DataAssetsHeader = ({
     history.push(
       getEntityDetailLink(
         entityType,
-        encodeURIComponent(dataAsset.fullyQualifiedName),
+        dataAsset.fullyQualifiedName,
         EntityTabs.ACTIVITY_FEED,
         ActivityFeedTabs.TASKS
       )

@@ -54,7 +54,7 @@ VERSIONS = {
     "looker-sdk": "looker-sdk>=22.20.0",
     "lkml": "lkml~=1.3",
     "tableau": "tableau-api-lib~=0.1",
-    "pyhive": "pyhive~=0.6",
+    "pyhive": "pyhive~=0.7",
     "mongo": "pymongo~=4.3",
     "redshift": "sqlalchemy-redshift==0.8.12",
     "snowflake": "snowflake-sqlalchemy~=1.4",
@@ -236,7 +236,7 @@ plugins: Dict[str, Set[str]] = {
     "powerbi": {VERSIONS["msal"]},
     "qliksense": {"websocket-client~=1.6.1"},
     "presto": {*COMMONS["hive"]},
-    "pymssql": {"pymssql==2.2.5"},
+    "pymssql": {"pymssql~=2.2.0"},
     "quicksight": {VERSIONS["boto3"]},
     "redash": {VERSIONS["packaging"]},
     "redpanda": {*COMMONS["kafka"]},
@@ -311,7 +311,7 @@ e2e_test = {
 build_options = {"includes": ["_cffi_backend"]}
 setup(
     name="openmetadata-ingestion",
-    version="1.2.0.0.dev0",
+    version="1.2.0.1",
     url="https://open-metadata.org/",
     author="OpenMetadata Committers",
     license="Apache License 2.0",
@@ -349,13 +349,7 @@ setup(
                 *[
                     requirements
                     for plugin, requirements in plugins.items()
-                    if plugin
-                    not in {
-                        "airflow",
-                        "db2",
-                        "great-expectations",
-                        "pymssql",  # pymssql build is failing ref issue: https://github.com/pymssql/pymssql/issues/826
-                    }
+                    if plugin not in {"airflow", "db2", "great-expectations"}
                 ]
             )
         ),

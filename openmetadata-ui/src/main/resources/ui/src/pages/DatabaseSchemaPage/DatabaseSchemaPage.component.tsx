@@ -78,7 +78,10 @@ import {
   ListStoredProcedureParams,
 } from '../../rest/storedProceduresAPI';
 import { getTableList, TableListParams } from '../../rest/tableAPI';
-import { getEntityMissingError } from '../../utils/CommonUtils';
+import {
+  getEntityMissingError,
+  sortTagsCaseInsensitive,
+} from '../../utils/CommonUtils';
 import { getEntityFeedLink, getEntityName } from '../../utils/EntityUtils';
 import { DEFAULT_ENTITY_PERMISSION } from '../../utils/PermissionsUtils';
 import { getDecodedFqn } from '../../utils/StringsUtils';
@@ -129,6 +132,11 @@ const DatabaseSchemaPage: FunctionComponent = () => {
     paging: pagingObject,
     currentPage: INITIAL_PAGING_VALUE,
   });
+
+  const decodedDatabaseSchemaFQN = useMemo(
+    () => getDecodedFqn(databaseSchemaFQN),
+    [databaseSchemaFQN]
+  );
 
   const handleShowDeletedTables = (value: boolean) => {
     setShowDeletedTables(value);
@@ -198,13 +206,13 @@ const DatabaseSchemaPage: FunctionComponent = () => {
   const getEntityFeedCount = useCallback(async () => {
     try {
       const response = await getFeedCount(
-        getEntityFeedLink(EntityType.DATABASE_SCHEMA, databaseSchemaFQN)
+        getEntityFeedLink(EntityType.DATABASE_SCHEMA, decodedDatabaseSchemaFQN)
       );
       setFeedCount(response.totalCount);
     } catch (err) {
       // Error
     }
-  }, [databaseSchemaFQN]);
+  }, [decodedDatabaseSchemaFQN]);
 
   const fetchDatabaseSchemaDetails = useCallback(async () => {
     try {
@@ -230,7 +238,7 @@ const DatabaseSchemaPage: FunctionComponent = () => {
       try {
         setStoredProcedure((prev) => ({ ...prev, isLoading: true }));
         const { data, paging } = await getStoredProceduresList({
-          databaseSchema: getDecodedFqn(databaseSchemaFQN),
+          databaseSchema: decodedDatabaseSchemaFQN,
           fields: 'owner,tags,followers',
           include: storedProcedure.deleted
             ? Include.Deleted
@@ -244,7 +252,7 @@ const DatabaseSchemaPage: FunctionComponent = () => {
         setStoredProcedure((prev) => ({ ...prev, isLoading: false }));
       }
     },
-    [databaseSchemaFQN, storedProcedure.deleted]
+    [decodedDatabaseSchemaFQN, storedProcedure.deleted]
   );
 
   const getSchemaTables = useCallback(
@@ -253,7 +261,7 @@ const DatabaseSchemaPage: FunctionComponent = () => {
       try {
         const res = await getTableList({
           ...params,
-          databaseSchema: getDecodedFqn(databaseSchemaFQN),
+          databaseSchema: decodedDatabaseSchemaFQN,
           include: showDeletedTables ? Include.Deleted : Include.NonDeleted,
         });
         setTableData(res);
@@ -263,7 +271,7 @@ const DatabaseSchemaPage: FunctionComponent = () => {
         setTableDataLoading(false);
       }
     },
-    [databaseSchemaFQN, showDeletedTables]
+    [decodedDatabaseSchemaFQN, showDeletedTables]
   );
 
   const onDescriptionEdit = useCallback((): void => {
@@ -322,13 +330,13 @@ const DatabaseSchemaPage: FunctionComponent = () => {
       if (activeKey !== activeTab) {
         history.push({
           pathname: getDatabaseSchemaDetailsPath(
-            getDecodedFqn(databaseSchemaFQN),
+            decodedDatabaseSchemaFQN,
             activeKey
           ),
         });
       }
     },
-    [activeTab, databaseSchemaFQN]
+    [activeTab, decodedDatabaseSchemaFQN]
   );
 
   const handleUpdateOwner = useCallback(
@@ -373,7 +381,10 @@ const DatabaseSchemaPage: FunctionComponent = () => {
         const res = await saveUpdatedDatabaseSchemaData(
           updatedData as DatabaseSchema
         );
-        setDatabaseSchema(res);
+        setDatabaseSchema({
+          ...res,
+          tags: sortTagsCaseInsensitive(res.tags ?? []),
+        });
         getEntityFeedCount();
       } catch (error) {
         showErrorToast(error as AxiosError, t('server.api-error'));
@@ -610,7 +621,7 @@ const DatabaseSchemaPage: FunctionComponent = () => {
             <Space className="w-full" direction="vertical" size="large">
               <TagsContainerV2
                 displayType={DisplayType.READ_MORE}
-                entityFqn={databaseSchemaFQN}
+                entityFqn={decodedDatabaseSchemaFQN}
                 entityType={EntityType.DATABASE_SCHEMA}
                 permission={editTagsPermission}
                 selectedTags={tags}
@@ -620,7 +631,7 @@ const DatabaseSchemaPage: FunctionComponent = () => {
               />
               <TagsContainerV2
                 displayType={DisplayType.READ_MORE}
-                entityFqn={databaseSchemaFQN}
+                entityFqn={decodedDatabaseSchemaFQN}
                 entityType={EntityType.DATABASE_SCHEMA}
                 permission={editTagsPermission}
                 selectedTags={tags}
@@ -727,7 +738,10 @@ const DatabaseSchemaPage: FunctionComponent = () => {
       })}>
       {isEmpty(databaseSchema) && !isSchemaDetailsLoading ? (
         <ErrorPlaceHolder className="m-0">
-          {getEntityMissingError(EntityType.DATABASE_SCHEMA, databaseSchemaFQN)}
+          {getEntityMissingError(
+            EntityType.DATABASE_SCHEMA,
+            decodedDatabaseSchemaFQN
+          )}
         </ErrorPlaceHolder>
       ) : (
         <Row gutter={[0, 12]}>

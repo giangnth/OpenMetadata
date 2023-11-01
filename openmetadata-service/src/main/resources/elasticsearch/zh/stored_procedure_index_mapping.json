@@ -400,6 +400,25 @@
       "code": {
         "type": "keyword"
       },
+      "tier": {
+        "properties": {
+          "tagFQN": {
+            "type": "keyword"
+          },
+          "labelType": {
+            "type": "keyword"
+          },
+          "description": {
+            "type": "text"
+          },
+          "source": {
+            "type": "keyword"
+          },
+          "state": {
+            "type": "keyword"
+          }
+        }
+      },
       "tags": {
         "properties": {
           "tagFQN": {
@@ -423,7 +442,7 @@
         "type": "object"
       },
       "extension": {
-        "type": "keyword"
+        "type": "object"
       },
       "sourceUrl": {
         "type": "keyword"

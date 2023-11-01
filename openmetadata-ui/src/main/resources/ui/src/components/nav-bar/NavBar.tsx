@@ -11,9 +11,9 @@
  *  limitations under the License.
  */
 
+import Icon from '@ant-design/icons';
 import {
   Badge,
-  Button,
   Col,
   Dropdown,
   Input,
@@ -37,9 +37,9 @@ import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import AppState from '../../AppState';
 import { ReactComponent as DropDownIcon } from '../../assets/svg/DropDown.svg';
+import { ReactComponent as IconBell } from '../../assets/svg/ic-alert-bell.svg';
 import { ReactComponent as DomainIcon } from '../../assets/svg/ic-domain.svg';
 import { ReactComponent as Help } from '../../assets/svg/ic-help.svg';
-import Logo from '../../assets/svg/logo-monogram.svg';
 import { ActivityFeedTabs } from '../../components/ActivityFeed/ActivityFeedTab/ActivityFeedTab.interface';
 import SearchOptions from '../../components/AppBar/SearchOptions';
 import Suggestions from '../../components/AppBar/Suggestions';
@@ -53,6 +53,7 @@ import {
   SOCKET_EVENTS,
 } from '../../constants/constants';
 import { EntityTabs, EntityType } from '../../enums/entity.enum';
+import brandImageClassBase from '../../utils/BrandImage/BrandImageClassBase';
 import {
   hasNotificationPermission,
   shouldRequestPermission,
@@ -73,10 +74,10 @@ import {
   isInPageSearchAllowed,
 } from '../../utils/RouterUtils';
 import SVGIcons, { Icons } from '../../utils/SvgUtils';
-import Avatar from '../common/avatar/Avatar';
 import CmdKIcon from '../common/CmdKIcon/CmdKIcon.component';
 import WhatsNewModal from '../Modals/WhatsNewModal/WhatsNewModal';
 import NotificationBox from '../NotificationBox/NotificationBox.component';
+import { UserProfileIcon } from '../Users/UserProfileIcon/UserProfileIcon.component';
 import { useWebSocketConnector } from '../web-scoket/web-scoket.provider';
 import './nav-bar.less';
 import { NavBarProps } from './NavBar.interface';
@@ -85,12 +86,10 @@ const cookieStorage = new CookieStorage();
 
 const NavBar = ({
   supportDropdown,
-  profileDropdown,
   searchValue,
   isFeatureModalOpen,
   isTourRoute = false,
   pathname,
-  username,
   isSearchBoxOpen,
   handleSearchBoxOpen,
   handleFeatureModal,
@@ -101,11 +100,8 @@ const NavBar = ({
 }: NavBarProps) => {
   const { searchCriteria, updateSearchCriteria } = useGlobalSearchProvider();
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  // get current user details
-  const currentUser = useMemo(
-    () => AppState.getCurrentUserDetails(),
-    [AppState.userDetails, AppState.nonSecureUserDetails]
-  );
+  const Logo = useMemo(() => brandImageClassBase.getMonogram().src, []);
+
   const history = useHistory();
   const { domainOptions, activeDomain, updateActiveDomain } =
     useDomainProvider();
@@ -122,7 +118,6 @@ const NavBar = ({
   const [hasMentionNotification, setHasMentionNotification] =
     useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>('Task');
-  const [isImgUrlValid, setIsImgUrlValid] = useState<boolean>(true);
 
   const entitiesSelect = useMemo(
     () => (
@@ -145,11 +140,6 @@ const NavBar = ({
       </Select>
     ),
     [searchCriteria, globalSearchOptions]
-  );
-
-  const profilePicture = useMemo(
-    () => currentUser?.profile?.images?.image512,
-    [currentUser]
   );
 
   const language = useMemo(
@@ -310,12 +300,6 @@ const NavBar = ({
     return () => targetNode.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress]);
 
-  useEffect(() => {
-    if (profilePicture) {
-      setIsImgUrlValid(true);
-    }
-  }, [profilePicture]);
-
   const handleDomainChange = useCallback(({ key }) => {
     updateActiveDomain(key);
     refreshPage();
@@ -327,10 +311,6 @@ const NavBar = ({
   }, []);
 
   const handleModalCancel = useCallback(() => handleFeatureModal(false), []);
-
-  const handleOnImageError = useCallback(() => {
-    setIsImgUrlValid(false);
-  }, []);
 
   const handleSelectOption = useCallback(
     (text) => {
@@ -470,35 +450,6 @@ const NavBar = ({
           </Dropdown>
 
           <Dropdown
-            destroyPopupOnHide
-            className="cursor-pointer"
-            dropdownRender={() => (
-              <NotificationBox
-                hasMentionNotification={hasMentionNotification}
-                hasTaskNotification={hasTaskNotification}
-                onMarkMentionsNotificationRead={handleMentionsNotificationRead}
-                onMarkTaskNotificationRead={handleTaskNotificationRead}
-                onTabChange={handleActiveTab}
-              />
-            )}
-            overlayStyle={{
-              zIndex: 9999,
-              width: '425px',
-              minHeight: '375px',
-            }}
-            placement="bottomRight"
-            trigger={['click']}
-            onOpenChange={handleBellClick}>
-            <Badge dot={hasTaskNotification || hasMentionNotification}>
-              <SVGIcons
-                alt="Alert bell icon"
-                icon={Icons.ALERT_BELL}
-                width="18"
-              />
-            </Badge>
-          </Dropdown>
-
-          <Dropdown
             className="cursor-pointer"
             menu={{
               items: languageSelectOptions,
@@ -519,38 +470,47 @@ const NavBar = ({
           </Dropdown>
 
           <Dropdown
-            className="cursor-pointer m-t-xss"
+            destroyPopupOnHide
+            className="cursor-pointer"
+            dropdownRender={() => (
+              <NotificationBox
+                hasMentionNotification={hasMentionNotification}
+                hasTaskNotification={hasTaskNotification}
+                onMarkMentionsNotificationRead={handleMentionsNotificationRead}
+                onMarkTaskNotificationRead={handleTaskNotificationRead}
+                onTabChange={handleActiveTab}
+              />
+            )}
+            overlayStyle={{
+              zIndex: 9999,
+              width: '425px',
+              minHeight: '375px',
+            }}
+            placement="bottomRight"
+            trigger={['click']}
+            onOpenChange={handleBellClick}>
+            <Badge dot={hasTaskNotification || hasMentionNotification}>
+              <Icon
+                className="align-middle"
+                component={IconBell}
+                style={{ fontSize: '20px' }}
+              />
+            </Badge>
+          </Dropdown>
+
+          <Dropdown
             menu={{ items: supportDropdown }}
             overlayStyle={{ width: 175 }}
             placement="bottomRight"
             trigger={['click']}>
-            <Help height={20} width={20} />
+            <Icon
+              className="align-middle"
+              component={Help}
+              style={{ fontSize: '20px' }}
+            />
           </Dropdown>
-          <div className="profile-dropdown" data-testid="dropdown-profile">
-            <Dropdown
-              menu={{
-                items: profileDropdown,
-              }}
-              trigger={['click']}>
-              <Button
-                icon={
-                  isImgUrlValid ? (
-                    <img
-                      alt="user"
-                      className="profile-image circle"
-                      referrerPolicy="no-referrer"
-                      src={profilePicture || ''}
-                      width={24}
-                      onError={handleOnImageError}
-                    />
-                  ) : (
-                    <Avatar name={username} type="circle" width="24" />
-                  )
-                }
-                type="text"
-              />
-            </Dropdown>
-          </div>
+
+          <UserProfileIcon />
         </Space>
       </div>
       <WhatsNewModal

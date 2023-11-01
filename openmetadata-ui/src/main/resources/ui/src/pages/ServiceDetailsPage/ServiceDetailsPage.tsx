@@ -102,7 +102,10 @@ import { getSearchIndexes } from '../../rest/SearchIndexAPI';
 import { getServiceByFQN, patchService } from '../../rest/serviceAPI';
 import { getContainers } from '../../rest/storageAPI';
 import { getTopics } from '../../rest/topicsAPI';
-import { getEntityMissingError } from '../../utils/CommonUtils';
+import {
+  getEntityMissingError,
+  sortTagsCaseInsensitive,
+} from '../../utils/CommonUtils';
 import { getEntityName } from '../../utils/EntityUtils';
 import { DEFAULT_ENTITY_PERMISSION } from '../../utils/PermissionsUtils';
 import {
@@ -143,6 +146,11 @@ const ServiceDetailsPage: FunctionComponent = () => {
     serviceCategory: ServiceTypes;
     tab: string;
   }>();
+
+  const decodedServiceFQN = useMemo(
+    () => getDecodedFqn(serviceFQN),
+    [serviceFQN]
+  );
 
   const isMetadataService = useMemo(
     () => serviceCategory === ServiceCategory.METADATA_SERVICES,
@@ -269,7 +277,7 @@ const ServiceDetailsPage: FunctionComponent = () => {
         setIsIngestionPipelineLoading(true);
         const response = await getIngestionPipelines({
           arrQueryFields: ['owner', 'pipelineStatuses'],
-          serviceFilter: getDecodedFqn(serviceFQN),
+          serviceFilter: decodedServiceFQN,
           paging,
           pipelineType: [
             PipelineType.Metadata,
@@ -292,7 +300,7 @@ const ServiceDetailsPage: FunctionComponent = () => {
         setIsIngestionPipelineLoading(false);
       }
     },
-    [serviceFQN, paging]
+    [decodedServiceFQN, paging]
   );
 
   const updateCurrentSelectedIngestion = useCallback(
@@ -418,7 +426,7 @@ const ServiceDetailsPage: FunctionComponent = () => {
   const fetchDatabases = useCallback(
     async (paging?: PagingWithoutTotal) => {
       const { data, paging: resPaging } = await getDatabases(
-        getDecodedFqn(serviceFQN),
+        decodedServiceFQN,
         'owner,tags,usageSummary',
         paging,
         include
@@ -427,13 +435,13 @@ const ServiceDetailsPage: FunctionComponent = () => {
       setData(data);
       setPaging(resPaging);
     },
-    [serviceFQN, include]
+    [decodedServiceFQN, include]
   );
 
   const fetchTopics = useCallback(
     async (paging?: PagingWithoutTotal) => {
       const { data, paging: resPaging } = await getTopics(
-        serviceFQN,
+        decodedServiceFQN,
         'owner,tags',
         paging,
         include
@@ -441,13 +449,13 @@ const ServiceDetailsPage: FunctionComponent = () => {
       setData(data);
       setPaging(resPaging);
     },
-    [serviceFQN, include]
+    [decodedServiceFQN, include]
   );
 
   const fetchDashboards = useCallback(
     async (paging?: PagingWithoutTotal) => {
       const { data, paging: resPaging } = await getDashboards(
-        getDecodedFqn(serviceFQN),
+        decodedServiceFQN,
         'owner,usageSummary,tags',
         paging,
         include
@@ -455,7 +463,7 @@ const ServiceDetailsPage: FunctionComponent = () => {
       setData(data);
       setPaging(resPaging);
     },
-    [serviceFQN, include]
+    [decodedServiceFQN, include]
   );
 
   const fetchDashboardsDataModel = useCallback(
@@ -463,7 +471,7 @@ const ServiceDetailsPage: FunctionComponent = () => {
       try {
         setIsServiceLoading(true);
         const { data, paging: resPaging } = await getDataModels({
-          service: getDecodedFqn(serviceFQN),
+          service: decodedServiceFQN,
           fields: 'owner,tags,followers',
           include,
           ...params,
@@ -478,13 +486,13 @@ const ServiceDetailsPage: FunctionComponent = () => {
         setIsServiceLoading(false);
       }
     },
-    [serviceFQN, include]
+    [decodedServiceFQN, include]
   );
 
   const fetchPipeLines = useCallback(
     async (paging?: PagingWithoutTotal) => {
       const { data, paging: resPaging } = await getPipelines(
-        getDecodedFqn(serviceFQN),
+        decodedServiceFQN,
         'owner,tags',
         paging,
         include
@@ -492,13 +500,13 @@ const ServiceDetailsPage: FunctionComponent = () => {
       setData(data);
       setPaging(resPaging);
     },
-    [serviceFQN, include]
+    [decodedServiceFQN, include]
   );
 
   const fetchMlModal = useCallback(
     async (paging?: PagingWithoutTotal) => {
       const { data, paging: resPaging } = await getMlModels(
-        getDecodedFqn(serviceFQN),
+        decodedServiceFQN,
         'owner,tags',
         paging,
         include
@@ -506,13 +514,13 @@ const ServiceDetailsPage: FunctionComponent = () => {
       setData(data);
       setPaging(resPaging);
     },
-    [serviceFQN, include]
+    [decodedServiceFQN, include]
   );
 
   const fetchContainers = useCallback(
     async (paging?: PagingWithoutTotal) => {
       const response = await getContainers({
-        service: getDecodedFqn(serviceFQN),
+        service: decodedServiceFQN,
         fields: 'owner,tags',
         paging,
         root: true,
@@ -522,13 +530,13 @@ const ServiceDetailsPage: FunctionComponent = () => {
       setData(response.data);
       setPaging(response.paging);
     },
-    [serviceFQN, include]
+    [decodedServiceFQN, include]
   );
 
   const fetchSearchIndexes = useCallback(
     async (paging?: PagingWithoutTotal) => {
       const response = await getSearchIndexes({
-        service: getDecodedFqn(serviceFQN),
+        service: decodedServiceFQN,
         fields: 'owner,tags',
         paging,
         root: true,
@@ -538,7 +546,7 @@ const ServiceDetailsPage: FunctionComponent = () => {
       setData(response.data);
       setPaging(response.paging);
     },
-    [serviceFQN, include]
+    [decodedServiceFQN, include]
   );
 
   const getOtherDetails = useCallback(
@@ -741,7 +749,10 @@ const ServiceDetailsPage: FunctionComponent = () => {
           jsonPatch
         );
 
-        setServiceDetails(response);
+        setServiceDetails({
+          ...response,
+          tags: sortTagsCaseInsensitive(response.tags ?? []),
+        });
       } catch (err) {
         showErrorToast(err as AxiosError);
       }

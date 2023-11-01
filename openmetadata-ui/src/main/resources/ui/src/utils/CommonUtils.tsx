@@ -67,7 +67,6 @@ import {
 import { UrlEntityCharRegEx } from '../constants/regex.constants';
 import { SIZE } from '../enums/common.enum';
 import { EntityTabs, EntityType, FqnPart } from '../enums/entity.enum';
-import { ThreadType } from '../generated/entity/feed/thread';
 import { PipelineType } from '../generated/entity/services/ingestionPipelines/ingestionPipeline';
 import { EntityReference } from '../generated/entity/teams/user';
 import { Paging } from '../generated/type/paging';
@@ -77,7 +76,8 @@ import { getEntityFeedLink, getTitleCase } from './EntityUtils';
 import Fqn from './Fqn';
 import { history } from './HistoryUtils';
 import { getSearchIndexTabPath } from './SearchIndexUtils';
-import { serviceTypeLogo } from './ServiceUtils';
+import serviceUtilClassBase from './ServiceUtilClassBase';
+import { getEncodedFqn } from './StringsUtils';
 import { TASK_ENTITIES } from './TasksUtils';
 import { showErrorToast } from './ToastUtils';
 
@@ -101,9 +101,10 @@ export const arraySorterByKey = <T extends object>(
 export const getPartialNameFromFQN = (
   fqn: string,
   arrTypes: Array<'service' | 'database' | 'table' | 'column'> = [],
-  joinSeperator = '/'
+  joinSeparator = '/'
 ): string => {
   const arrFqn = Fqn.split(fqn);
+
   const arrPartialName = [];
   for (const type of arrTypes) {
     if (type === 'service' && arrFqn.length > 0) {
@@ -117,7 +118,7 @@ export const getPartialNameFromFQN = (
     }
   }
 
-  return arrPartialName.join(joinSeperator);
+  return arrPartialName.join(joinSeparator);
 };
 
 /**
@@ -331,7 +332,7 @@ export const addToRecentViewed = (eData: RecentlyViewedData): void => {
       .sort(arraySorterByKey<RecentlyViewedData>('timestamp', true));
     arrData.unshift(entityData);
 
-    if (arrData.length > 5) {
+    if (arrData.length > 8) {
       arrData.pop();
     }
     recentlyViewed.data = arrData;
@@ -378,7 +379,7 @@ export const getServiceLogo = (
   serviceType: string,
   className = ''
 ): JSX.Element | null => {
-  const logo = serviceTypeLogo(serviceType);
+  const logo = serviceUtilClassBase.getServiceTypeLogo(serviceType);
 
   if (!isNull(logo)) {
     return <img alt="" className={className} src={logo} />;
@@ -525,10 +526,7 @@ export const getFeedCounts = (
   conversationCallback: (value: React.SetStateAction<number>) => void
 ) => {
   // To get conversation count
-  getFeedCount(
-    getEntityFeedLink(entityType, entityFQN),
-    ThreadType.Conversation
-  )
+  getFeedCount(getEntityFeedLink(entityType, entityFQN))
     .then((res) => {
       if (res) {
         conversationCallback(res.totalCount);
@@ -646,6 +644,7 @@ export const getIngestionFrequency = (pipelineType: PipelineType) => {
   switch (pipelineType) {
     case PipelineType.TestSuite:
     case PipelineType.Metadata:
+    case PipelineType.Application:
       return getHourCron(value);
 
     default:
@@ -779,14 +778,18 @@ export const getIsErrorMatch = (error: AxiosError, key: string): boolean => {
 };
 
 /**
- * @param color have color code
+ * @param color hex have color code
  * @param opacity take opacity how much to reduce it
  * @returns hex color string
  */
-export const reduceColorOpacity = (color: string, opacity: number): string => {
-  const _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+export const reduceColorOpacity = (hex: string, opacity: number): string => {
+  hex = hex.replace(/^#/, ''); // Remove the "#" if it's there
+  hex = hex.length === 3 ? hex.replace(/./g, '$&$&') : hex; // Expand short hex to full hex format
+  const [red, green, blue] = [0, 2, 4].map((i) =>
+    parseInt(hex.slice(i, i + 2), 16)
+  ); // Parse hex values
 
-  return color + _opacity.toString(16).toUpperCase();
+  return `rgba(${red}, ${green}, ${blue}, ${opacity})`; // Create RGBA color
 };
 
 export const getEntityDetailLink = (
@@ -796,10 +799,11 @@ export const getEntityDetailLink = (
   subTab?: string
 ) => {
   let path = '';
+  const encodedFQN = getEncodedFqn(fqn);
   switch (entityType) {
     default:
     case EntityType.TABLE:
-      path = getTableTabPath(fqn, tab, subTab);
+      path = getTableTabPath(encodedFQN, tab, subTab);
 
       break;
 
@@ -828,7 +832,7 @@ export const getEntityDetailLink = (
       break;
 
     case EntityType.SEARCH_INDEX:
-      path = getSearchIndexTabPath(fqn, tab, subTab);
+      path = getSearchIndexTabPath(encodedFQN, tab, subTab);
 
       break;
 
@@ -848,7 +852,7 @@ export const getEntityDetailLink = (
       break;
 
     case EntityType.USER:
-      path = getUserPath(fqn, tab, subTab);
+      path = getUserPath(encodedFQN, tab, subTab);
 
       break;
 

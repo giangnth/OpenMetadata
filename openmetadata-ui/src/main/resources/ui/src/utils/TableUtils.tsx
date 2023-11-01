@@ -65,7 +65,7 @@ import {
   getMlModelPath,
   getPipelineDetailsPath,
   getServiceDetailsPath,
-  getStoredProcedureDetailsPath,
+  getStoredProcedureDetailPath,
   getTableDetailsPath,
   getTableTabPath,
   getTagsDetailsPath,
@@ -90,9 +90,14 @@ import {
   getTableFQNFromColumnFQN,
   sortTagsCaseInsensitive,
 } from './CommonUtils';
-import { getGlossaryPath, getSettingPath } from './RouterUtils';
+import {
+  getDataProductsDetailsPath,
+  getDomainDetailsPath,
+  getGlossaryPath,
+  getSettingPath,
+} from './RouterUtils';
 import { getSearchIndexDetailsPath } from './SearchIndexUtils';
-import { serviceTypeLogo } from './ServiceUtils';
+import serviceUtilClassBase from './ServiceUtilClassBase';
 import { getDecodedFqn, ordinalize } from './StringsUtils';
 import { TableFieldsInfoCommonEntities } from './TableUtils.interface';
 
@@ -274,7 +279,7 @@ export const getEntityLink = (
 
     case SearchIndex.STORED_PROCEDURE:
     case EntityType.STORED_PROCEDURE:
-      return getStoredProcedureDetailsPath(getDecodedFqn(fullyQualifiedName));
+      return getStoredProcedureDetailPath(getDecodedFqn(fullyQualifiedName));
 
     case EntityType.TEST_CASE:
       return `${getTableTabPath(
@@ -285,6 +290,14 @@ export const getEntityLink = (
     case EntityType.SEARCH_INDEX:
     case SearchIndex.SEARCH_INDEX:
       return getSearchIndexDetailsPath(fullyQualifiedName);
+
+    case EntityType.DOMAIN:
+    case SearchIndex.DOMAIN:
+      return getDomainDetailsPath(fullyQualifiedName);
+
+    case EntityType.DATA_PRODUCT:
+    case SearchIndex.DATA_PRODUCT:
+      return getDataProductsDetailsPath(fullyQualifiedName);
 
     case SearchIndex.TABLE:
     case EntityType.TABLE:
@@ -311,7 +324,7 @@ export const getServiceIcon = (source: SourceType) => {
       <img
         alt="service-icon"
         className="inline h-7"
-        src={serviceTypeLogo(source.serviceType || '')}
+        src={serviceUtilClassBase.getServiceTypeLogo(source.serviceType || '')}
       />
     );
   }
@@ -321,22 +334,32 @@ export const getEntityIcon = (indexType: string) => {
   switch (indexType) {
     case SearchIndex.TOPIC:
     case EntityType.TOPIC:
+    case EntityType.MESSAGING_SERVICE:
+    case SearchIndex.MESSAGING_SERVICE:
       return <TopicIcon />;
 
     case SearchIndex.DASHBOARD:
     case EntityType.DASHBOARD:
+    case EntityType.DASHBOARD_SERVICE:
+    case SearchIndex.DASHBOARD_SERVICE:
       return <DashboardIcon />;
 
     case SearchIndex.MLMODEL:
     case EntityType.MLMODEL:
+    case EntityType.MLMODEL_SERVICE:
+    case SearchIndex.ML_MODEL_SERVICE:
       return <MlModelIcon />;
 
     case SearchIndex.PIPELINE:
     case EntityType.PIPELINE:
+    case EntityType.PIPELINE_SERVICE:
+    case SearchIndex.PIPELINE_SERVICE:
       return <PipelineIcon />;
 
     case SearchIndex.CONTAINER:
     case EntityType.CONTAINER:
+    case EntityType.STORAGE_SERVICE:
+    case SearchIndex.STORAGE_SERVICE:
       return <ContainerIcon />;
 
     case SearchIndex.DASHBOARD_DATA_MODEL:
@@ -347,8 +370,10 @@ export const getEntityIcon = (indexType: string) => {
     case EntityType.STORED_PROCEDURE:
       return <IconStoredProcedure />;
 
+    case SearchIndex.TAG:
     case EntityType.TAG:
       return <ClassificationIcon />;
+    case SearchIndex.GLOSSARY:
     case EntityType.GLOSSARY:
       return <GlossaryIcon />;
     case EntityType.GLOSSARY_TERM:
@@ -356,7 +381,20 @@ export const getEntityIcon = (indexType: string) => {
 
     case EntityType.SEARCH_INDEX:
     case SearchIndex.SEARCH_INDEX:
-      return <SearchOutlined className="text-sm" />;
+    case EntityType.SEARCH_SERVICE:
+    case SearchIndex.SEARCH_SERVICE:
+      return (
+        <SearchOutlined
+          className="text-sm text-inherit"
+          style={{ color: DE_ACTIVE_COLOR }}
+        />
+      );
+
+    case EntityType.DOMAIN:
+    case EntityType.DATA_PRODUCT:
+    case SearchIndex.DATA_PRODUCT:
+    case SearchIndex.DOMAIN:
+      return <DomainIcon />;
 
     case SearchIndex.TABLE:
     case EntityType.TABLE:

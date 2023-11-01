@@ -40,6 +40,7 @@ import {
   addToRecentViewed,
   getCurrentUserId,
   getEntityMissingError,
+  sortTagsCaseInsensitive,
 } from '../../utils/CommonUtils';
 import { getEntityName } from '../../utils/EntityUtils';
 import { DEFAULT_ENTITY_PERMISSION } from '../../utils/PermissionsUtils';
@@ -47,6 +48,7 @@ import {
   defaultFields,
   getFormattedPipelineDetails,
 } from '../../utils/PipelineDetailsUtils';
+import { getDecodedFqn } from '../../utils/StringsUtils';
 import { showErrorToast } from '../../utils/ToastUtils';
 
 const PipelineDetailsPage = () => {
@@ -57,6 +59,11 @@ const PipelineDetailsPage = () => {
   const { fqn: pipelineFQN } = useParams<{ fqn: string }>();
   const [pipelineDetails, setPipelineDetails] = useState<Pipeline>(
     {} as Pipeline
+  );
+
+  const decodedPipelineFQN = useMemo(
+    () => getDecodedFqn(pipelineFQN),
+    [pipelineFQN]
   );
 
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -136,7 +143,7 @@ const PipelineDetailsPage = () => {
           error as AxiosError,
           t('server.entity-details-fetch-error', {
             entityType: t('label.pipeline'),
-            entityName: pipelineFQN,
+            entityName: decodedPipelineFQN,
           })
         );
       }
@@ -205,7 +212,10 @@ const PipelineDetailsPage = () => {
   const settingsUpdateHandler = async (updatedPipeline: Pipeline) => {
     try {
       const res = await saveUpdatedPipelineData(updatedPipeline);
-      setPipelineDetails({ ...res, tags: res.tags ?? [] });
+      setPipelineDetails({
+        ...res,
+        tags: sortTagsCaseInsensitive(res.tags ?? []),
+      });
     } catch (error) {
       showErrorToast(
         error as AxiosError,
@@ -292,7 +302,7 @@ const PipelineDetailsPage = () => {
   if (isError) {
     return (
       <ErrorPlaceHolder>
-        {getEntityMissingError('pipeline', pipelineFQN)}
+        {getEntityMissingError('pipeline', decodedPipelineFQN)}
       </ErrorPlaceHolder>
     );
   }
@@ -309,7 +319,7 @@ const PipelineDetailsPage = () => {
       handleToggleDelete={handleToggleDelete}
       paging={paging}
       pipelineDetails={pipelineDetails}
-      pipelineFQN={pipelineFQN}
+      pipelineFQN={decodedPipelineFQN}
       settingsUpdateHandler={settingsUpdateHandler}
       taskUpdateHandler={onTaskUpdate}
       unFollowPipelineHandler={unFollowPipeline}
