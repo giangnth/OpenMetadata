@@ -27,6 +27,7 @@ from metadata.generated.schema.entity.services.connections.database.singleStoreC
 from metadata.generated.schema.entity.services.connections.database.snowflakeConnection import (
     SnowflakeConnection,
 )
+from metadata.generated.schema.entity.services.connections.database.starrocksConnection import StarrocksConnection
 from metadata.generated.schema.entity.services.connections.database.trinoConnection import (
     TrinoConnection,
 )
@@ -47,6 +48,7 @@ from metadata.profiler.interface.sqlalchemy.single_store.profiler_interface impo
 from metadata.profiler.interface.sqlalchemy.snowflake.profiler_interface import (
     SnowflakeProfilerInterface,
 )
+from metadata.profiler.interface.sqlalchemy.starrocks.profiler_interface import StarRocksProfilerInterface
 from metadata.profiler.interface.sqlalchemy.trino.profiler_interface import (
     TrinoProfilerInterface,
 )
@@ -86,3 +88,4 @@ profiler_interface_factory.register(
     SnowflakeConnection.__name__, SnowflakeProfilerInterface
 )
 profiler_interface_factory.register(TrinoConnection.__name__, TrinoProfilerInterface)
+profiler_interface_factory.register(StarrocksConnection.__name__, StarRocksProfilerInterface)

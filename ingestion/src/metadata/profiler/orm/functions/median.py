@@ -44,6 +44,17 @@ def _(elements, compiler, **kwargs):
     return "percentile_cont(%s , %s) OVER()" % (col, percentile)
 
 
+@compiles(MedianFn, Dialects.StarRocks)
+def _(elements, compiler, **kwargs):
+    # col, _, percentile = [
+    #     compiler.process(element, **kwargs) for element in elements.clauses
+    # ]
+    col = compiler.process(elements.clauses.clauses[0])
+    percentile = elements.clauses.clauses[2].value
+    logger.info(f"MEDIAN STARROCKS col: {col}, percentile: {percentile}")
+    return "PERCENTILE_CONT(%s , %s) " % (col, percentile)
+
+
 @compiles(MedianFn, Dialects.ClickHouse)
 def _(elements, compiler, **kwargs):
     col, _, percentile = [

@@ -21,6 +21,7 @@ from metadata.generated.schema.entity.services.connections.database.bigQueryConn
 from metadata.generated.schema.entity.services.connections.database.datalakeConnection import (
     DatalakeConnection,
 )
+from metadata.generated.schema.entity.services.connections.database.starrocksConnection import StarrocksConnection
 from metadata.generated.schema.entity.services.connections.database.trinoConnection import (
     TrinoConnection,
 )
@@ -30,6 +31,7 @@ from metadata.profiler.processor.sampler.sqlalchemy.bigquery.sampler import (
     BigQuerySampler,
 )
 from metadata.profiler.processor.sampler.sqlalchemy.sampler import SQASampler
+from metadata.profiler.processor.sampler.sqlalchemy.starrocks.sampler import StarrocksSampler
 from metadata.profiler.processor.sampler.sqlalchemy.trino.sampler import TrinoSampler
 
 
@@ -59,3 +61,4 @@ sampler_factory_.register(DatabaseConnection.__name__, SQASampler)
 sampler_factory_.register(BigQueryConnection.__name__, BigQuerySampler)
 sampler_factory_.register(DatalakeConnection.__name__, DatalakeSampler)
 sampler_factory_.register(TrinoConnection.__name__, TrinoSampler)
+sampler_factory_.register(StarrocksConnection.__name__, StarrocksSampler)

@@ -75,6 +75,7 @@ class Dialects(Enum):
     Snowflake = "snowflake"
     Trino = "trino"
     Vertica = "vertica"
+    StarRocks = "starrocks"
 
 
 # Sometimes we want to skip certain types for computing metrics.

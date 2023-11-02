@@ -295,11 +295,11 @@ class SQAProfilerInterface(ProfilerInterface, SQAInterfaceMixin):
 
         if not metrics:
             return None
+        row = None
         try:
             row = runner.select_first_from_sample(
                 *[metric(column).fn() for metric in metrics],
             )
-            return dict(row)
         except ProgrammingError as exc:
             logger.info(
                 f"Skipping metrics for {runner.table.__tablename__}.{column.name} due to {exc}"
@@ -307,6 +307,8 @@ class SQAProfilerInterface(ProfilerInterface, SQAInterfaceMixin):
         except Exception as exc:
             msg = f"Error trying to compute profile for {runner.table.__tablename__}.{column.name}: {exc}"
             handle_query_exception(msg, exc, session)
+        if row:
+            return dict(row)
         return None
 
     def _compute_system_metrics(
