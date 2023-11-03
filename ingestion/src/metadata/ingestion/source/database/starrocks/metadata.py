@@ -10,7 +10,12 @@ from metadata.generated.schema.metadataIngestion.workflow import (
 )
 from metadata.ingestion.api.steps import InvalidSourceException
 from metadata.ingestion.source.database.common_db_source import CommonDbSourceService
+from metadata.ingestion.source.database.starrocks.dialect_imp import DialectImp
 from metadata.utils.logger import ingestion_logger
+from sqlalchemy.engine import Connection
+from sqlalchemy import exc
+from typing import Any, Dict, List
+from starrocks.sqlalchemy import datatype
 
 logger = ingestion_logger()
 
@@ -31,9 +36,9 @@ class StarrocksSource(CommonDbSourceService):
             )
         return cls(config, metadata_config)
 
-    # def prepare(self):
+    def prepare(self):
     #     StarRocksDialect.get_table_names = get_table_names
     #     StarRocksDialect.get_view_names = get_view_names
     #     StarRocksDialect.get_table_comment = get_table_comment
-    #     StarRocksDialect.get_columns = get_columns
+        StarRocksDialect.get_columns = DialectImp().get_columns
     #     StarRocksDialect.get_view_definition = get_view_definition

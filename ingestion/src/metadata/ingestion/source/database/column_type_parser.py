@@ -322,7 +322,7 @@ class ColumnTypeParser:
         data_type: str, **kwargs: Any  # pylint: disable=unused-argument
     ) -> Union[object, Dict[str, object]]:
         data_type = data_type.lower().strip()
-        data_type = data_type.replace(" ", "")
+        # data_type = data_type.replace(" ", "")
         if data_type.startswith("array<"):
             if data_type[-1] != ">":
                 raise ValueError(f"expected '>' found: {data_type}")

@@ -6,7 +6,7 @@ source:
       type: Starrocks
       username: root
       password: ''
-      hostPort: localhost:9030
+      hostPort: 192.168.5.130:9030
   sourceConfig:
     config:
       type: DatabaseMetadata
