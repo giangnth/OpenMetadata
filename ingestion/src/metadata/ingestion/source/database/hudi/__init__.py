@@ -55,8 +55,6 @@ def configure_spark_with_hudi_pip(
 
     .. note:: Evolving
     """
-    import importlib_metadata  # load this library only when this function is called
-
     if type(spark_session_builder) is not SparkSession.Builder:
         msg = f"""
             This function must be called with a SparkSession builder as the argument.
@@ -65,18 +63,7 @@ def configure_spark_with_hudi_pip(
         """
         raise TypeError(msg)
 
-    try:
-        delta_version = importlib_metadata.version("delta_spark")
-    except Exception as e:
-        msg = """
-            This function can be used only when Delta Lake has been locally installed with pip.
-            See the online documentation for the correct usage of this function.
-        """
-        raise Exception(msg) from e
-
-    scala_version = "2.12"
-    # maven_artifact = f"io.delta:delta-core_{scala_version}:{delta_version}"
-    maven_artifact = "org.apache.hudi:hudi-spark3.3-bundle_2.12:0.13.1"
+    maven_artifact = "org.apache.hudi:hudi-spark3.3-bundle_2.12:0.14.0"
     extra_packages = extra_packages if extra_packages is not None else []
     all_artifacts = [maven_artifact] + extra_packages
     packages_str = ",".join(all_artifacts)

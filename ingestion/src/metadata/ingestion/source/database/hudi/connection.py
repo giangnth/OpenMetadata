@@ -49,7 +49,7 @@ def get_connection(connection: HudiConnection) -> SparkSession:
         )
         # Download hudi jars when creating the SparkSession
         .config(
-            "spark.jars.packages", "org.apache.hudi:hudi-spark3.3-bundle_2.12:0.13.1"
+            "spark.jars.packages", "org.apache.hudi:hudi-spark3.3-bundle_2.12:0.14.0"
         )
     )
 
