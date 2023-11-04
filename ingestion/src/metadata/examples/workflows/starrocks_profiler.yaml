@@ -12,8 +12,10 @@ source:
       type: Profiler
       generateSampleData: true
       schemaFilterPattern:
-        includes:
-        - profiling.profile
+        excludes:
+          - sys.*
+          - information_schema.*
+          - _statistics_.*
 
 processor:
   type: "orm-profiler"

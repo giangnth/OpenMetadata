@@ -20,9 +20,6 @@ from sqlalchemy.sql.sqltypes import DECIMAL
 
 from metadata.profiler.metrics.core import CACHE
 from metadata.profiler.orm.registry import Dialects
-from metadata.utils.logger import profiler_logger
-
-logger = profiler_logger()
 
 
 class MedianFn(FunctionElement):
@@ -46,12 +43,8 @@ def _(elements, compiler, **kwargs):
 
 @compiles(MedianFn, Dialects.StarRocks)
 def _(elements, compiler, **kwargs):
-    # col, _, percentile = [
-    #     compiler.process(element, **kwargs) for element in elements.clauses
-    # ]
     col = compiler.process(elements.clauses.clauses[0])
     percentile = elements.clauses.clauses[2].value
-    logger.info(f"MEDIAN STARROCKS col: {col}, percentile: {percentile}")
     return "PERCENTILE_CONT(%s , %s) " % (col, percentile)
 
 

@@ -13,40 +13,14 @@
 Interfaces with database for all database engine
 supporting sqlalchemy abstraction layer
 """
-from sqlalchemy import Column, inspect
 from metadata.profiler.interface.sqlalchemy.profiler_interface import (
-    SQAProfilerInterface,
-    handle_query_exception
+    SQAProfilerInterface
 )
 from metadata.profiler.processor.sampler.sampler_factory import sampler_factory_
-from metadata.utils.logger import profiler_interface_registry_logger
-from sqlalchemy.exc import ProgrammingError
-from metadata.profiler.processor.runner import QueryRunner
-from metadata.profiler.metrics.registry import Metrics
-from typing import List
-logger = profiler_interface_registry_logger()
-from sqlalchemy.sql.sqltypes import JSON
-from starrocks.sqlalchemy import datatype
 
 
 class StarRocksProfilerInterface(SQAProfilerInterface):
     """StarRocks profiler interface"""
-
-    def _get_struct_columns(self, columns: dict, parent: str):
-        columns_list = []
-        for key, value in columns.items():
-            if not isinstance(value, JSON):
-                col = Column(f"{parent}.{key}", value)
-                columns_list.append(col)
-            else:
-                col = self._get_struct_columns(
-                    value.__dict__.get("_STRUCT_byname"), f"{parent}.{key}"
-                )
-                columns_list.extend(col)
-        return columns_list
-
-    def _get_array_columns(self, ):
-        pass
 
     def _get_sampler(self, **kwargs):
         """get sampler object"""
@@ -61,27 +35,3 @@ class StarRocksProfilerInterface(SQAProfilerInterface):
             profile_sample_query=self.profile_query,
             table_type=self.table_entity.tableType,
         )
-
-    def get_columns(self):
-        """Get columns from table"""
-
-        columns = []
-        for column in inspect(self.table).c:
-            if isinstance(column.type, JSON):
-                columns.extend(
-                    self._get_struct_columns(
-                        column.type.__dict__.get("_STRUCT_byname"), column.name
-                    )
-                )
-            elif isinstance(column.type, datatype.ARRAY):
-                logger.info(f"get_columns: ARRAY: {column.type.__dict__}")
-                columns.extend(
-                    self._get_array_columns(
-                        column.type.__dict__.get("impl"), column.name
-                    )
-                )
-                columns.append(column)
-            else:
-                columns.append(column)
-
-        return columns

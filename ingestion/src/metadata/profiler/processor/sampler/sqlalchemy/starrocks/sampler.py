@@ -20,9 +20,6 @@ from metadata.generated.schema.entity.data.table import ProfileSampleType, Table
 from metadata.profiler.api.models import ProfileSampleConfig
 from metadata.profiler.processor.handle_partition import partition_filter_handler
 from metadata.profiler.processor.sampler.sqlalchemy.sampler import SQASampler
-from metadata.utils.logger import profiler_interface_registry_logger
-
-logger = profiler_interface_registry_logger()
 
 
 class StarrocksSampler(SQASampler):
@@ -52,7 +49,6 @@ class StarrocksSampler(SQASampler):
     @partition_filter_handler(build_sample=True)
     def get_sample_query(self) -> Query:
         """get query for sample data"""
-        logger.info(f"get_sample_query {self.table}, {self.profile_sample_type}, {self.table_type}")
         # TABLESAMPLE SYSTEM is not supported for views
         if (
             self.profile_sample_type == ProfileSampleType.PERCENTAGE
