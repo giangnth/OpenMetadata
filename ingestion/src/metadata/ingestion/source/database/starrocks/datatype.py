@@ -9,16 +9,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
+import logging
 import re
 from typing import Iterator, List, Optional, Tuple, Type, Union
-
-import sqlalchemy
 from sqlalchemy import Numeric, Integer, Float
-from sqlalchemy import util
 from sqlalchemy.sql import sqltypes
-from sqlalchemy.sql.type_api import TypeDecorator, TypeEngine
-from sqlalchemy.types import String
+from sqlalchemy.sql.type_api import TypeEngine
+
+logger = logging.getLogger(__name__)
 
 SQLType = Union[TypeEngine, Type[TypeEngine]]
 
@@ -79,35 +77,6 @@ class STRUCT(TypeEngine):
         return list
 
 
-class TIME(sqltypes.TIME):
-    __visit_name__ = "TIME"
-
-    def __init__(self, precision=None, timezone=False):
-        super(TIME, self).__init__(timezone=timezone)
-        self.precision = precision
-
-
-class TIMESTAMP(sqltypes.TIMESTAMP):
-    __visit_name__ = "TIMESTAMP"
-
-    def __init__(self, precision=None, timezone=False):
-        super(TIMESTAMP, self).__init__(timezone=timezone)
-        self.precision = precision
-
-
-class JSON(TypeDecorator):
-    impl = String
-
-    def process_bind_param(self, value, dialect):
-        return json.dumps(value)
-
-    def process_result_value(self, value, dialect):
-        return json.loads(value)
-
-    def get_col_spec(self, **kw):
-        return 'JSON'
-
-
 _type_map = {
     # === Boolean ===
     "boolean": sqltypes.BOOLEAN,
@@ -138,9 +107,6 @@ _type_map = {
     'percentile': PERCENTILE,
     'bitmap': BITMAP,
 }
-
-if hasattr(sqlalchemy, "Uuid"):
-    _type_map["uuid"] = sqlalchemy.Uuid
 
 
 def unquote(string: str, quote: str = '"', escape: str = "\\") -> str:
@@ -206,7 +172,7 @@ def parse_sqltype(type_str: str) -> TypeEngine:
     type_str = type_str.strip().lower()
     match = re.match(r"^(?P<type>\w+)\s*(?:(?:\(|<)(?P<options>.*)(?:\)|>))?", type_str)
     if not match:
-        util.warn(f"Could not parse type name '{type_str}'")
+        logger.warning(f"Could not parse type name '{type_str}'")
         return sqltypes.NULLTYPE
     type_name = match.group("type")
     type_opts = match.group("options")
@@ -214,8 +180,6 @@ def parse_sqltype(type_str: str) -> TypeEngine:
     if type_name == "array":
         item_type = parse_sqltype(type_opts)
         if isinstance(item_type, sqltypes.ARRAY):
-            # Multi-dimensions array is normalized in SQLAlchemy, e.g:
-            # `ARRAY(ARRAY(INT))` in Trino SQL will become `ARRAY(INT(), dimensions=2)` in SQLAlchemy
             dimensions = (item_type.dimensions or 1) + 1
             return sqltypes.ARRAY(item_type.item_type, dimensions=dimensions)
         return sqltypes.ARRAY(item_type)
@@ -234,7 +198,7 @@ def parse_sqltype(type_str: str) -> TypeEngine:
         return STRUCT(attr_types)
 
     if type_name not in _type_map:
-        util.warn(f"Did not recognize type '{type_name}'")
+        logger.warning(f"Did not recognize type '{type_name}'")
         return sqltypes.NULLTYPE
     type_class = _type_map[type_name]
     return type_class()
